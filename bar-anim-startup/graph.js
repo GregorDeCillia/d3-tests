@@ -84,7 +84,7 @@ chart.append('g')
 chart.append('g')
   .call(d3.axisLeft(yScale));
 
-  // vertical grid lines
+// vertical grid lines
 chart.append('g')
   .attr('class', 'grid')
   .attr('transform', `translate(0, ${height})`)
@@ -176,7 +176,7 @@ svg
 svg.append('text')
   .attr('class', 'label')
   .attr('x', width / 2 + margin)
-  .attr('y', height + margin * 1.45)
+  .attr('y', height + margin * 1.65)
   .attr('text-anchor', 'middle')
   .text('Languages')
 
@@ -186,13 +186,6 @@ svg.append('text')
   .attr('y', 40)
   .attr('text-anchor', 'middle')
   .text('Most loved programming languages in 2018')
-
-svg.append('text')
-  .attr('class', 'source')
-  .attr('x', width - 1.3*margin)
-  .attr('y', height + margin * 1.45)
-  .attr('text-anchor', 'start')
-  .text('Source: Stack Overflow, 2018')
 
 svg.selectAll("rect")
   .data(sample)
