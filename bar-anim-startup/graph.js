@@ -1,32 +1,5 @@
 // https://insights.stackoverflow.com/survey/2018/#technology-most-loved-dreaded-and-wanted-languages
-const sample = [
-  {
-    language: 'Rust',
-    value: 78.9,
-    color: '#000000'
-  },
-  {
-    language: 'Kotlin',
-    value: 75.1,
-    color: '#00a2ee'
-  },
-  {
-    language: 'Python',
-    value: 68.0,
-    color: '#fbcb39'
-  },
-  {
-    language: 'TypeScript',
-    value: 67.0,
-    color: '#007bc8'
-  },
-  {
-    language: 'Go',
-    value: 65.6,
-    color: '#65cedb'
-  }
-];
-
+const sample = JSON.parse(loadFile("sample.json"));
 const svg = d3.select('svg#bar');
 
 const margin = 80;
