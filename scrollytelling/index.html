@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+  <html>
+
+  <head>
+  <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>Scrollama: Sticky Overlay Example</title>
+      <meta name="description" content="Scrollama: Sticky Overlay Example">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link rel='stylesheet' href='russellgoldenberg_scrollama/style.css'>
+            <style>
+            #scrolly {
+            position: relative;
+          background-color: #f3f3f3;
+            padding: 1rem;
+          }
+article {
+  position: relative;
+  padding: 0;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+bodytext {
+  color: black;
+  position: relative;
+  font-size: 2rem;
+}
+figure {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  background-color: #8a8a8a;
+}
+figure p {
+  text-align: center;
+  padding: 1rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  font-size: 8rem;
+  font-weight: 900;
+  color: #fff;
+}
+.step {
+  margin: 0 auto 2rem auto;
+  color: #fff;
+    background-color: rgba(255,255,255,0.6)
+}
+.step:last-child {
+  margin-bottom: 0;
+}
+.step.is-active p {
+  background-color: goldenrod;
+  color: #3b3b3b;
+}
+.step p {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.5rem;
+  background-color: #3b3b3b;
+}
+</style>
+
+  </head>
+
+  <body>
+  <main>
+  <section id='intro'>
+  <h1 class='intro__hed'>Mietkosten in Österreich</h1>
+  <p class='intro__dek'>
+  Beispiel für Scrollytelling
+</p>
+  </section>
+  <bodytext>
+  Das vorliegende Dokument Präsentiert Techniken für "Scrollytelling" anhand
+von praktischen Beispielen
+</bodytext>
+  <section id = "scrolly_karten">
+  <figure>
+  <img src="mieten_nuts2.png" alt="Nuts2" width="100%"
+id = "nuts2"
+style = "display: block; margin-left: auto; margin-right: auto; position: absolute;">
+  <img src="mieten_nuts3.png" alt="Nuts3" width="100%"
+id = "nuts3"
+style = "display: block; margin-left: auto; margin-right: auto;
+		              position: absolute; display: none;">
+  </figure>
+  <article>
+  <div class='step' data-step='1'>
+  <p>STEP 1</p>
+  <bodytext>
+  Im folgenden werden wir uns mit den Mietkosten in Österreich
+beschäftigen.
+<br/><br/>
+  In der beiliegenden Karte sehen wir die durschnittlichen
+Wohnkosten pro Quadratmeter für jedes Bundesland
+<br/><br/>
+  Die höchsten Mieten sind in <font color="#b9294c">dunkrlrot</font>
+  gekennzeichnet und werden voriegend in den westlichen Bndesländern
+aufgefunden.
+</bodytext>
+  </div>
+  <div style="margin-bottom:15cm;"></div>
+  <div class='step' data-step='2'>
+  <p>STEP 2</p>
+  <bodytext>
+  Dieser Trend bestätigt sich auch, wenn die Ergebnisse auf der
+NUTS-3 Ebene dargestellt werden. Viele der westlichen Regionen -
+  mit Ausnahme von <b>Außerfern</b> - weisen einen relativ hohen Mietpreis auf.
+</bodytext>
+  </div>
+  <div style="margin-bottom:15cm;"></div>
+  <div class='step' data-step='3'>
+  test
+</div>
+  </article>
+  </section>
+  <br/><br/>
+  <h1 class='intro__hed' style="text-align: center;">Bundesländer im Vergleich</h1>
+  <div style = "max-width: 800px; width: 50%; margin: 0 auto;">
+  <bodytext style = "max-width: 150px;">
+  Normale Text passage mit gewöhnlichem Text. Hier gibt es nichts spannendes
+zu sehen. TODO: Übereleitung zu den Interaktiven Grafiken
+<br/><br/>
+  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus
+</bodytext>
+  </div>
+  <section id='scrolly'>
+
+  <figure>
+  <div id="my_dataviz"></div>
+  <p>0</p>
+  </figure>
+
+  <article>
+  <div class='step' data-step='1'>
+  <p>STEP 1</p>
+  </div>
+  <div style="margin-bottom:15cm;"></div>
+  <div class='step' data-step='2'>
+  <p>STEP 2</p>
+  </div>
+  <div style="margin-bottom:15cm;"></div>
+  <div class='step' data-step='3'>
+  <p>STEP 3</p>
+  </div>
+  <div style="margin-bottom:15cm;"></div>
+  <div class='step' data-step='4'>
+  <p>STEP 4</p>
+  </div>
+  </article>
+
+  </section>
+
+  <section id='outro'></section>
+  </main>
+
+  <!-- <div class='debug'></div> -->
+  <script src='https://unpkg.com/d3@5.9.1/dist/d3.min.js'></script>
+  <script src='https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js'></script>
+  <script src='russellgoldenberg_scrollama/stickyfill.min.js'></script>
+  <script src='russellgoldenberg_scrollama/scrollama.min.js'></script>
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+  <script src="split_bars.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+  // using d3 for convenience
+var main = d3.select('main')
+var scrolly = main.select('#scrolly');
+var figure = scrolly.select('figure');
+var article = scrolly.select('article');
+var step = article.selectAll('.step');
+// initialize the scrollama
+var scroller = scrollama();
+var scroller2 = scrollama();
+// generic window resize listener event
+function handleResize() {
+  // 1. update height of step elements
+  var stepH = Math.floor(window.innerHeight * 0.5);
+  step.style('height', stepH + 'px');
+  var figureHeight = window.innerHeight * 0.8
+  var figureMarginTop = (window.innerHeight - figureHeight) / 2
+  figure
+  .style('height', figureHeight + 'px')
+  .style('top', figureMarginTop + 'px');
+  main.select("#scrolly_karten").select("figure")
+  .style('height', (window.innerWidth-17) * 5.24/10 + 'px')
+  .style('top', figureMarginTop + 'px');
+  // 3. tell scrollama to update new element dimensions
+  scroller.resize();
+  scroller2.resize();
+}
+// scrollama event handlers
+function handleStepEnter(response) {
+  console.log(response)
+  // response = { element, direction, index }
+  // add color to current step only
+  step.classed('is-active', function (d, i) {
+    return i === response.index;
+  })
+  // update graphic based on step
+  figure.select('p').text(response.index + 1);
+  if (response.index == 2 && response.direction == "down")
+    split_bars.split()
+  if (response.index == 1 && response.direction == "up")
+    split_bars.unify()
+}
+
+function handleMapEnter(response) {
+  console.log(response);
+  if (response.index == 1 && response.direction == "down")
+    $('#nuts3').fadeIn(2000);
+  if (response.index == 1 && response.direction == "up")
+    $('#nuts3').fadeOut(2000);
+}
+
+function setupStickyfill() {
+  d3.selectAll('.sticky').each(function () {
+    Stickyfill.add(this);
+  });
+}
+function init() {
+  setupStickyfill();
+  // 1. force a resize on load to ensure proper dimensions are sent to scrollama
+  handleResize();
+  // 2. setup the scroller passing options
+  // 		this will also initialize trigger observations
+  // 3. bind scrollama event handlers (this can be chained like below)
+  scroller2.setup({
+    step: '#scrolly_karten article .step',
+    offset: 0.70,
+    //debug: true,
+  })
+  .onStepEnter(handleMapEnter)
+  scroller.setup({
+    step: '#scrolly article .step',
+    offset: 0.33,
+    //debug: true,
+  })
+  .onStepEnter(handleStepEnter)
+  // setup resize event
+  window.addEventListener('resize', handleResize);
+}
+// kick things off
+init();
+</script>
+  </body>
+
+  </html>
