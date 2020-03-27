@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+<!-- Create an element where the map will take place -->
+<h1 style="text-align: center">COVID-19 Fälle in Österreich</h1>
+<svg id="my_dataviz" width="1100" height="1120"></svg>
+
+<script>
+
+// The svg
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height")-20;
+
+// Map and projection
+
+var projection = d3.geoMercator()
+    .center([13, 47.8])
+    .scale(7500)
+
+var geojson_source = "https://raw.githubusercontent.com/ginseng666/" +
+  "GeoJSON-TopoJSON-Austria/master/2017/simplified-95/"
+
+var cases = {
+  "Amstetten":{"bezirk":"Amstetten","freq":132,"id":"305","population":116114,"bl":"Nieder\u00f6sterreich","ratio":113.681382090015},"Baden":{"bezirk":"Baden","freq":67,"id":"306","population":146203,"bl":"Nieder\u00f6sterreich","ratio":45.826693022715},"Bludenz":{"bezirk":"Bludenz","freq":159,"id":"801","population":64103,"bl":"Vorarlberg","ratio":248.038313339469},"Braunau am Inn":{"bezirk":"Braunau am Inn","freq":34,"id":"404","population":104408,"bl":"Ober\u00f6sterreich","ratio":32.5645544402728},"Bregenz":{"bezirk":"Bregenz","freq":130,"id":"802","population":134989,"bl":"Vorarlberg","ratio":96.3041433005652},"Bruck an der Leitha":{"bezirk":"Bruck an der Leitha","freq":34,"id":"307","population":102010,"bl":"Nieder\u00f6sterreich","ratio":33.3300656798353},"Bruck-M\u00fcrzzuschlag":{"bezirk":"Bruck-M\u00fcrzzuschlag","freq":27,"id":"621","population":98984,"bl":"Steiermark","ratio":27.2771356986988},"Deutschlandsberg":{"bezirk":"Deutschlandsberg","freq":14,"id":"603","population":60821,"bl":"Steiermark","ratio":23.0183653672251},"Dornbirn":{"bezirk":"Dornbirn","freq":85,"id":"803","population":89879,"bl":"Vorarlberg","ratio":94.5715906941555},"Eferding":{"bezirk":"Eferding","freq":22,"id":"405","population":33156,"bl":"Ober\u00f6sterreich","ratio":66.3529979490892},"Eisenstadt-Umgebung":{"bezirk":"Eisenstadt-Umgebung","freq":12,"id":"103","population":42927,"bl":"Burgenland","ratio":27.9544342721364},"Eisenstadt(Stadt)":{"bezirk":"Eisenstadt(Stadt)","freq":8,"id":"101","population":14637,"bl":"Burgenland","ratio":54.6560087449614},"Feldkirch":{"bezirk":"Feldkirch","freq":148,"id":"804","population":108123,"bl":"Vorarlberg","ratio":136.881144622328},"Feldkirchen":{"bezirk":"Feldkirchen","freq":7,"id":"210","population":29937,"bl":"K\u00e4rnten","ratio":23.3824364498781},"Freistadt":{"bezirk":"Freistadt","freq":62,"id":"406","population":66621,"bl":"Ober\u00f6sterreich","ratio":93.0637486678375},"G\u00e4nserndorf":{"bezirk":"G\u00e4nserndorf","freq":39,"id":"308","population":103686,"bl":"Nieder\u00f6sterreich","ratio":37.6135640298594},"Gm\u00fcnd":{"bezirk":"Gm\u00fcnd","freq":4,"id":"309","population":36773,"bl":"Nieder\u00f6sterreich","ratio":10.8775460256166},"Gmunden":{"bezirk":"Gmunden","freq":43,"id":"407","population":101631,"bl":"Ober\u00f6sterreich","ratio":42.3099251212721},"Graz-Umgebung":{"bezirk":"Graz-Umgebung","freq":77,"id":"606","population":154260,"bl":"Steiermark","ratio":49.9157266951899},"Graz(Stadt)":{"bezirk":"Graz(Stadt)","freq":188,"id":"601","population":288806,"bl":"Steiermark","ratio":65.0956005069147},"Grieskirchen":{"bezirk":"Grieskirchen","freq":28,"id":"408","population":64721,"bl":"Ober\u00f6sterreich","ratio":43.2626195516139},"G\u00fcssing":{"bezirk":"G\u00fcssing","freq":5,"id":"104","population":25797,"bl":"Burgenland","ratio":19.3820986936465},"Hallein":{"bezirk":"Hallein","freq":41,"id":"502","population":60374,"bl":"Salzburg","ratio":67.9100274952794},"Hartberg-F\u00fcrstenfeld":{"bezirk":"Hartberg-F\u00fcrstenfeld","freq":156,"id":"622","population":90622,"bl":"Steiermark","ratio":172.143629582221},"Hermagor":{"bezirk":"Hermagor","freq":3,"id":"203","population":18224,"bl":"K\u00e4rnten","ratio":16.4618086040386},"Hollabrunn":{"bezirk":"Hollabrunn","freq":10,"id":"310","population":50858,"bl":"Nieder\u00f6sterreich","ratio":19.6625899563491},"Horn":{"bezirk":"Horn","freq":7,"id":"311","population":31090,"bl":"Nieder\u00f6sterreich","ratio":22.5152782245095},"Imst":{"bezirk":"Imst","freq":140,"id":"702","population":60056,"bl":"Tirol","ratio":233.115758625283},"Innsbruck-Land":{"bezirk":"Innsbruck-Land","freq":226,"id":"703","population":179318,"bl":"Tirol","ratio":126.033080895393},"Innsbruck-Stadt":{"bezirk":"Innsbruck-Stadt","freq":282,"id":"701","population":132110,"bl":"Tirol","ratio":213.45848156839},"Jennersdorf":{"bezirk":"Jennersdorf","freq":7,"id":"105","population":17066,"bl":"Burgenland","ratio":41.0172272354389},"Kirchdorf an der Krems":{"bezirk":"Kirchdorf an der Krems","freq":27,"id":"409","population":56866,"bl":"Ober\u00f6sterreich","ratio":47.4800407976647},"Kitzb\u00fchel":{"bezirk":"Kitzb\u00fchel","freq":166,"id":"704","population":63881,"bl":"Tirol","ratio":259.858173791894},"Klagenfurt Land":{"bezirk":"Klagenfurt Land","freq":24,"id":"204","population":59800,"bl":"K\u00e4rnten","ratio":40.133779264214},"Klagenfurt Stadt":{"bezirk":"Klagenfurt Stadt","freq":42,"id":"201","population":100817,"bl":"K\u00e4rnten","ratio":41.6596407351935},"Korneuburg":{"bezirk":"Korneuburg","freq":95,"id":"312","population":90889,"bl":"Nieder\u00f6sterreich","ratio":104.523099605013},"Krems an der Donau(Stadt)":{"bezirk":"Krems an der Donau(Stadt)","freq":18,"id":"301","population":24876,"bl":"Nieder\u00f6sterreich","ratio":72.3589001447178},"Krems(Land)":{"bezirk":"Krems(Land)","freq":76,"id":"313","population":56596,"bl":"Nieder\u00f6sterreich","ratio":134.285108488232},"Kufstein":{"bezirk":"Kufstein","freq":205,"id":"705","population":109682,"bl":"Tirol","ratio":186.903958717018},"Landeck":{"bezirk":"Landeck","freq":534,"id":"706","population":44362,"bl":"Tirol","ratio":1203.73292457509},"Leibnitz":{"bezirk":"Leibnitz","freq":101,"id":"610","population":84155,"bl":"Steiermark","ratio":120.016635969342},"Leoben":{"bezirk":"Leoben","freq":16,"id":"611","population":60060,"bl":"Steiermark","ratio":26.6400266400266},"Lienz":{"bezirk":"Lienz","freq":62,"id":"707","population":48753,"bl":"Tirol","ratio":127.171661231104},"Liezen":{"bezirk":"Liezen","freq":28,"id":"612","population":79901,"bl":"Steiermark","ratio":35.04336616563},"Lilienfeld":{"bezirk":"Lilienfeld","freq":18,"id":"314","population":25812,"bl":"Nieder\u00f6sterreich","ratio":69.7350069735007},"Linz-Land":{"bezirk":"Linz-Land","freq":109,"id":"410","population":150273,"bl":"Ober\u00f6sterreich","ratio":72.5346535971199},"Linz(Stadt)":{"bezirk":"Linz(Stadt)","freq":163,"id":"401","population":205726,"bl":"Ober\u00f6sterreich","ratio":79.2315993117058},"Mattersburg":{"bezirk":"Mattersburg","freq":17,"id":"106","population":39925,"bl":"Burgenland","ratio":42.5798371947401},"Melk":{"bezirk":"Melk","freq":62,"id":"315","population":77962,"bl":"Nieder\u00f6sterreich","ratio":79.5259228855083},"Mistelbach":{"bezirk":"Mistelbach","freq":57,"id":"316","population":75483,"bl":"Nieder\u00f6sterreich","ratio":75.5136918246493},"M\u00f6dling":{"bezirk":"M\u00f6dling","freq":98,"id":"317","population":118998,"bl":"Nieder\u00f6sterreich","ratio":82.3543252827779},"Murau":{"bezirk":"Murau","freq":2,"id":"614","population":27659,"bl":"Steiermark","ratio":7.23091941140316},"Murtal":{"bezirk":"Murtal","freq":20,"id":"620","population":72004,"bl":"Steiermark","ratio":27.7762346536304},"Neunkirchen":{"bezirk":"Neunkirchen","freq":101,"id":"318","population":86291,"bl":"Nieder\u00f6sterreich","ratio":117.045810107659},"Neusiedl am See":{"bezirk":"Neusiedl am See","freq":31,"id":"107","population":59552,"bl":"Burgenland","ratio":52.055346587856},"Oberpullendorf":{"bezirk":"Oberpullendorf","freq":12,"id":"108","population":37513,"bl":"Burgenland","ratio":31.9889105110228},"Oberwart":{"bezirk":"Oberwart","freq":48,"id":"109","population":54076,"bl":"Burgenland","ratio":88.7639618314964},"Perg":{"bezirk":"Perg","freq":175,"id":"411","population":68459,"bl":"Ober\u00f6sterreich","ratio":255.627455849487},"Reutte":{"bezirk":"Reutte","freq":28,"id":"708","population":32670,"bl":"Tirol","ratio":85.7055402509948},"Ried im Innkreis":{"bezirk":"Ried im Innkreis","freq":23,"id":"412","population":61204,"bl":"Ober\u00f6sterreich","ratio":37.5792431867198},"Rohrbach":{"bezirk":"Rohrbach","freq":90,"id":"413","population":56524,"bl":"Ober\u00f6sterreich","ratio":159.224400254759},"Salzburg-Umgebung":{"bezirk":"Salzburg-Umgebung","freq":103,"id":"503","population":152281,"bl":"Salzburg","ratio":67.638116376961},"Salzburg(Stadt)":{"bezirk":"Salzburg(Stadt)","freq":91,"id":"501","population":154211,"bl":"Salzburg","ratio":59.0100576482871},"Sankt Johann im Pongau":{"bezirk":"Sankt Johann im Pongau","freq":262,"id":"504","population":80573,"bl":"Salzburg","ratio":325.170962977672},"Sankt P\u00f6lten(Land)":{"bezirk":"Sankt P\u00f6lten(Land)","freq":103,"id":"319","population":131044,"bl":"Nieder\u00f6sterreich","ratio":78.5995543481579},"Sankt P\u00f6lten(Stadt)":{"bezirk":"Sankt P\u00f6lten(Stadt)","freq":39,"id":"302","population":55044,"bl":"Nieder\u00f6sterreich","ratio":70.8524089819054},"Sankt Veit an der Glan":{"bezirk":"Sankt Veit an der Glan","freq":19,"id":"205","population":54555,"bl":"K\u00e4rnten","ratio":34.8272385665842},"Sch\u00e4rding":{"bezirk":"Sch\u00e4rding","freq":35,"id":"414","population":57307,"bl":"Ober\u00f6sterreich","ratio":61.0745633168723},"Scheibbs":{"bezirk":"Scheibbs","freq":38,"id":"320","population":41403,"bl":"Nieder\u00f6sterreich","ratio":91.7807888317272},"Schwaz":{"bezirk":"Schwaz","freq":157,"id":"709","population":83873,"bl":"Tirol","ratio":187.187771988602},"Spittal an der Drau":{"bezirk":"Spittal an der Drau","freq":16,"id":"206","population":76091,"bl":"K\u00e4rnten","ratio":21.027453969589},"Steyr-Land":{"bezirk":"Steyr-Land","freq":81,"id":"415","population":60427,"bl":"Ober\u00f6sterreich","ratio":134.046039022291},"Steyr(Stadt)":{"bezirk":"Steyr(Stadt)","freq":17,"id":"402","population":38193,"bl":"Ober\u00f6sterreich","ratio":44.5107742256434},"S\u00fcdoststeiermark":{"bezirk":"S\u00fcdoststeiermark","freq":34,"id":"623","population":84276,"bl":"Steiermark","ratio":40.3436328254782},"Tamsweg":{"bezirk":"Tamsweg","freq":12,"id":"505","population":20320,"bl":"Salzburg","ratio":59.0551181102362},"Tulln":{"bezirk":"Tulln","freq":92,"id":"321","population":103771,"bl":"Nieder\u00f6sterreich","ratio":88.6567538136859},"Urfahr-Umgebung":{"bezirk":"Urfahr-Umgebung","freq":160,"id":"416","population":85505,"bl":"Ober\u00f6sterreich","ratio":187.123560025729},"Villach Land":{"bezirk":"Villach Land","freq":26,"id":"207","population":64668,"bl":"K\u00e4rnten","ratio":40.2053565905858},
+  "Villach Stadt":{"bezirk":"Villach Stadt","freq":13,"id":"202","population":62243,"bl":"K\u00e4rnten","ratio":20.8858827498675},"V\u00f6cklabruck":{"bezirk":"V\u00f6cklabruck","freq":81,"id":"417","population":136253,"bl":"Ober\u00f6sterreich","ratio":59.4482323324991},"Voitsberg":{"bezirk":"Voitsberg","freq":52,"id":"616","population":51161,"bl":"Steiermark","ratio":101.6399210336},"V\u00f6lkermarkt":{"bezirk":"V\u00f6lkermarkt","freq":34,"id":"208","population":41878,"bl":"K\u00e4rnten","ratio":81.1882133817279},"Waidhofen an der Thaya":{"bezirk":"Waidhofen an der Thaya","freq":9,"id":"322","population":25888,"bl":"Nieder\u00f6sterreich","ratio":34.7651421508035},"Waidhofen an der Ybbs(Stadt)":{"bezirk":"Waidhofen an der Ybbs(Stadt)","freq":11,"id":"303","population":11261,"bl":"Nieder\u00f6sterreich","ratio":97.6822662285765},"Weiz":{"bezirk":"Weiz","freq":73,"id":"617","population":90343,"bl":"Steiermark","ratio":80.8031612853237},"Wels-Land":{"bezirk":"Wels-Land","freq":57,"id":"418","population":73094,"bl":"Ober\u00f6sterreich","ratio":77.981776890032},"Wels(Stadt)":{"bezirk":"Wels(Stadt)","freq":47,"id":"403","population":61727,"bl":"Ober\u00f6sterreich","ratio":76.1417208028901},"Wien(Stadt)":{"bezirk":"Wien(Stadt)","freq":1024,"id":"900","population":"2000000","bl":"Wien","ratio":"54"},"Wiener Neustadt(Land)":{"bezirk":"Wiener Neustadt(Land)","freq":14,"id":"323","population":77991,"bl":"Nieder\u00f6sterreich","ratio":17.9507891936249},"Wiener Neustadt(Stadt)":{"bezirk":"Wiener Neustadt(Stadt)","freq":18,"id":"304","population":45277,"bl":"Nieder\u00f6sterreich","ratio":39.7552841398503},"Wolfsberg":{"bezirk":"Wolfsberg","freq":20,"id":"209","population":52726,"bl":"K\u00e4rnten","ratio":37.9319500815537},"Zell am See":{"bezirk":"Zell am See","freq":188,"id":"506","population":87462,"bl":"Salzburg","ratio":214.950492785438},
+  "Zwettl":{"bezirk":"Zwettl","freq":17,"id":"325","population":42222,"bl":"Nieder\u00f6sterreich","ratio":40.2633698072095},
+  "Rust(Stadt)":{"freq": 0, "ratio":0}}
+/*
+setTimeout(function() {
+    d3.json(geojson_source + "laender_95_geo.json", function(data){
+    // Draw the map
+    svg.append("g")
+        .selectAll("path2")
+        .data(data.features)
+        .enter().append("path")
+            .attr("fill", (d, i) => {
+                console.log(d.properties);
+                return "rgba(255, 255, 255, 0)";
+            })
+            .attr("d", d3.geoPath()
+                .projection(projection)
+            )
+            .style("stroke", "black")
+            .style("stroke-width", "1.2px")
+    })
+}, 200)
+*/
+
+update_tooltip = (name, faelle, einwohner, faelle_rel) => {
+  document.getElementById("bezirk").innerHTML = 
+     name
+  document.getElementById("faelle").innerHTML = 
+    "Fälle: <br/>" + faelle
+  document.getElementById("einwohner").innerHTML = 
+    "Einwohner: <br/>" + einwohner
+  document.getElementById("faelle_rel").innerHTML = 
+    "Fälle pro 100.000 EW: <br/>" + Math.round(faelle_rel*10)/10
+}
+
+handleMouseover = (d, i) => {
+  var cases2 =  cases[d.properties.name]
+  update_tooltip(d.properties.name, cases2.freq, cases2.population, cases2.ratio)
+  svg.selectAll("#circle_"+i)//.transition()
+    .attr("r", 20).attr("opacity", .6).attr("stroke-width", 2)
+  svg.selectAll("#path_"+i)//.transition()
+    .attr("stroke-width", 5)
+  tooltip_rect//.transition().duration(500)
+    .attr("fill", d3.interpolateRdYlGn(scale_cases(d)))
+    .attr("stroke", d3.interpolateRdYlGn(scale_cases(d)))
+  svg.selectAll("#bar_" + cases2.bl)//.transition()
+    .attr("stroke-width", 5)
+}
+
+handleMouseLeave = (d, i) => {
+  var cases2 =  cases[d.properties.name]
+  svg.selectAll("#circle_"+i)//.transition()
+    .attr("r", 10).attr("opacity", .7).attr("stroke-width", .5)
+  svg.selectAll("#path_"+i)//.transition()
+    .attr("stroke-width", 1)
+  svg.selectAll("#bar_" + cases2.bl)//.transition()
+    .attr("stroke-width", 1)
+}
+
+var circles_y = 580
+scale_cases = (d) => {
+  //return 1-cases[d.properties.name].ratio/300
+  return 1-cases[d.properties.name].ratio/260
+  //return 1.5-Math.log(cases[d.properties.name].ratio)/4.2
+}
+
+// Load external data and boot
+d3.json(geojson_source + "bezirke_95_geo.json", function(data){
+    // Draw the map
+    svg.append("g")
+        .selectAll("path")
+        .data(data.features)
+        .enter().append("path")
+            .attr("id", (d, i) => "path_"+i)
+            .attr("fill", (d) => d3.interpolateRdYlGn(scale_cases(d)))
+            .attr("d", d3.geoPath()
+                .projection(projection)
+            )
+            .attr("class", (d) => cases[d.properties.name].bl)
+            .style("stroke", "rgba(0,0,0,.3)")
+            .on("mouseenter", handleMouseover)
+            .on("mouseleave", handleMouseLeave)
+
+    svg.append("g")
+       .attr("id", "circles")
+       .selectAll("circle")
+       .data(data.features)
+       .enter()
+       .append("circle")
+       .attr("cx", (d) => 300 + 700 * (1 - scale_cases(d)))
+       .attr("cy", circles_y)
+       .attr("r", 10)
+       .attr("opacity", .7)
+       .attr("fill", (d) => d3.interpolateRdYlGn(scale_cases(d)))
+       .on("mouseover", handleMouseover)
+       .on("mouseleave", handleMouseLeave)
+       .attr("stroke-width", .5)
+       .attr("stroke", "black")
+       .attr("id", (d, i) => "circle_" + i)
+       .attr("class", (d) => "circle_"+cases[d.properties.name].bl)
+})
+
+var tooltip_rect = svg.append("rect")
+  .attr("x", 10)
+  .attr("y", 10)
+  .attr("width", 350)
+  .attr("height", 120)
+  .attr("fill", "white")
+  .attr("fill-opacity", .2)
+  .attr("rx", 5)
+  .attr("ry", 5)
+  .attr("stroke-width", 3)
+
+svg.append("text")
+   .attr("x", 15)
+   .attr("y", 35)
+   .attr("id", "bezirk")
+   .attr("font-weight", "bold")
+   .style("font-size", 20)
+
+svg.append("text")
+   .attr("x", 15)
+   .attr("y", 60)
+   .attr("id", "faelle")
+   .style("font-size", 20)
+
+svg.append("text")
+    .attr("x", 15)
+    .attr("y", 86)
+    .attr("id", "einwohner")
+    .style("font-size", 20)
+
+svg.append("text")
+    .attr("x", 15)
+    .attr("y", 110)
+    .attr("id", "faelle_rel")
+    .style("font-size", 20)
+
+svg.append("line")
+  .attr("x1", 300)
+  .attr("x2", 1000)
+  .attr("y1", circles_y)
+  .attr("y2", circles_y)
+  .attr("style", "stroke:rgba(0,0,0,.3);stroke-width:2")
+
+for (var i = 0; i <= 13; i++) {
+    svg.append("text")
+      .attr("x", 300 + i*700/260*20)
+      .attr("y", 615)
+      .text(i*20)
+      .attr("text-anchor", "middle")
+      //.attr("fill", d3.interpolateRdYlGn(1 - 2*i / 30))
+}
+
+svg.append("text")
+  .attr("x", 300 + 700/2)
+  .attr("y", 640)
+  .text("Fälle pro 100.000 Einwohner")
+  .attr("text-anchor", "middle")
+
+var nuts2 = [{"bl":"Kärnten","freq":204,"pop":560939,"ratio":36.3676},{"bl":"Burgenland","freq":140,"pop":291493,"ratio":48.0286},{"bl":"Wien","freq":1024,"pop":1897491,"ratio":53.966},{"bl":"Steiermark","freq":788,"pop":1243052,"ratio":63.3924},{"bl":"Niederösterreich","freq":1159,"pop":1677542,"ratio":69.0892},{"bl":"Oberösterreich","freq":1254,"pop":1482095,"ratio":84.61},{"bl":"Salzburg","freq":697,"pop":555221,"ratio":125.5356},{"bl":"Vorarlberg","freq":522,"pop":397094,"ratio":131.455},{"bl":"Tirol","freq":1800,"pop":754705,"ratio":238.5038}]
+
+svg.append("g")
+  .selectAll("text")
+  .data(nuts2)
+  .enter()
+  .append("text")
+  .attr("x", 270)
+  .attr("y", (d, i) => 690 + 40*i)
+  .attr("font-size", 24)
+  .attr("text-anchor", "end")
+  .text((d) => d.bl)
+
+svg.append("g")
+  .selectAll("rect")
+  .data(nuts2)
+  .enter()
+  .append("rect")
+  .attr("x", 300)
+  .attr("y", (d, i) => 670 + 40*i)
+  .attr("height", 30)
+  .attr("width", (d) => 700 * d.ratio/260)
+  .attr("fill", (d) => d3.interpolateRdYlGn(1 - d.ratio/260))
+  .attr("stroke-width", 1)
+  .attr("stroke", "rgba(0,0,0,.4)")
+  .on("mouseenter", (d) => {
+    update_tooltip(d.bl, d.freq, d.pop, d.ratio)
+    tooltip_rect//.transition().duration(500)
+      .attr("fill", d3.interpolateRdYlGn(1 - d.ratio/260))
+      .attr("stroke", d3.interpolateRdYlGn(1 - d.ratio/260))
+    d3.selectAll("."+d.bl)//.transition()
+      .attr("stroke-width", 5)
+    d3.selectAll(".circle_"+d.bl)//.transition()
+      .attr("r", 20).attr("opacity", .5).attr("stroke-width", 1)
+  })
+  .on("mouseleave", (d) => {
+    d3.selectAll("."+d.bl)//.transition()
+      .attr("stroke-width", 1)
+    d3.selectAll(".circle_"+d.bl)//.transition()
+      .attr("r", 10).attr("opacity", .7).attr("stroke-width", .5)
+  })
+  .attr("class", (d) => d.bl)
+  .attr("id", (d) => "bar_" + d.bl)
+
+svg.append("g")
+  .selectAll("text")
+  .data(nuts2)
+  .enter()
+  .append("text")
+  .attr("x", (d) => 305 + 700 * d.ratio/260)
+  .attr("y", (d, i) => 692 + 40*i)
+  .attr("font-size", 20)
+  .text((d) => Math.round(d.ratio*10)/10)
+
+</script>
