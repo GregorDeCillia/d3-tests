@@ -1,4 +1,6 @@
-// Map and projection
+var map = svg.append("g")
+  .attr("name", "map")
+  .attr("transform", "translate(800, 0)")
 
 var projection = d3.geoMercator()
     .center([13, 47.8])
@@ -36,13 +38,9 @@ function tooltip_map_update(name, faelle, einwohner, faelle_rel){
     "Fälle pro 100.000 EW: " + Math.round(faelle_rel*10)/10)
   
   tooltip_map.selectAll("rect").transition().duration(500)
-    .attr("fill", d3.interpolateRdYlGn(1 - faelle_rel/260))
-    .attr("stroke", d3.interpolateRdYlGn(1 - faelle_rel/260))
+    .attr("fill", get_color(faelle_rel))
+    .attr("stroke", get_color(faelle_rel))
 }
-
-var map = svg.append("g")
-  .attr("name", "map")
-  .attr("transform", "translate(0, 0)")
 
 // Load external data and boot
 d3.json(geojson_source + "bezirke_95_geo.json", function(data){
@@ -53,14 +51,12 @@ d3.json(geojson_source + "bezirke_95_geo.json", function(data){
         .data(data.features)
         .enter().append("path")
             .attr("id", (d, i) => "path_"+i)
-            .attr("fill", (d) => d3.interpolateRdYlGn(scale_cases(d)))
+            .attr("fill", (d) => get_color(get_ratio(d)))
             .attr("d", d3.geoPath()
                 .projection(projection)
             )
             .attr("class", (d) => cases[d.properties.name].bl)
             .style("stroke", "rgba(0,0,0,.3)")
-            //.style("stroke", "rgba(0,0,0,.1)")
-            //.style("stroke-width", "3px")
             .on("mouseenter", handleMouseover)
             .on("mouseleave", handleMouseLeave)
 
@@ -70,10 +66,10 @@ d3.json(geojson_source + "bezirke_95_geo.json", function(data){
        .data(data.features)
        .enter()
        .append("circle")
-       .attr("cx", (d) => 300 + 700 * (1 - scale_cases(d)))
+       .attr("cx", (d) => x_linear(get_ratio(d)))
        .attr("r", 10)
        .attr("opacity", .7)
-       .attr("fill", (d) => d3.interpolateRdYlGn(scale_cases(d)))
+       .attr("fill", (d) => get_color(get_ratio(d)))
        .on("mouseover", handleMouseover)
        .on("mouseleave", handleMouseLeave)
        .attr("stroke-width", .5)
@@ -84,13 +80,13 @@ d3.json(geojson_source + "bezirke_95_geo.json", function(data){
 
 var tooltip_map = map.append("g")
   .attr("name", "tooltip")
-  .attr("transform", "translate(50, 70)")
+  .attr("transform", "translate(50, 110)")
 
 tooltip_map.append("rect")
   .attr("width", 350)
   .attr("height", 120)
   .attr("fill", "white")
-  .attr("fill-opacity", .2)
+  .attr("fill-opacity", .1)
   .attr("rx", 5)
   .attr("ry", 5)
   .attr("stroke-width", 3)
@@ -107,3 +103,19 @@ add_text("bezirk", 25).attr("font-weight", "bold")
 add_text("faelle", 50)
 add_text("einwohner", 75)
 add_text("faelle_rel", 100)
+
+function map_highlight(bl) {
+  map.selectAll("."+bl).transition()
+    .attr("stroke-width", 5)
+
+  color_legend.selectAll(".circle_"+bl).transition()
+    .attr("r", 20).attr("opacity", .5).attr("stroke-width", 1)
+
+}
+
+function map_unhighlight(bl) {
+  map.selectAll("."+bl).transition()
+    .attr("stroke-width", 1)
+  color_legend.selectAll(".circle_"+bl).transition()
+    .attr("r", 10).attr("opacity", .7).attr("stroke-width", .5)
+}

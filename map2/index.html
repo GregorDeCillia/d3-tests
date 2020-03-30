@@ -8,10 +8,29 @@
 
 <!-- Create an element where the map will take place -->
 <!--<h1 style="text-align: center">COVID-19 Fälle in Österreich</h1> -->
-<svg id="my_dataviz" width="1100" height="1120"></svg>
+<svg id="my_dataviz" width="1850" height="1020"></svg>
 
 <script>
 var svg = d3.select("svg")
+
+function svg_highlight(bl, skip_map = false) {
+  bar_highlight(bl)
+  dot_plot_highlight(bl)
+  time_series_highlight(bl)
+  if (!skip_map) {
+    map_highlight(bl)
+    let bl_data = nuts2.filter(d => d.bl == bl)[0]
+    tooltip_map_update(bl_data.bl, bl_data.freq, bl_data.pop, bl_data.ratio)
+  }
+}
+
+function svg_unhighlight(bl, skip_map = false) {
+  bar_unhighlight(bl)
+  dot_plot_unhighlight(bl)
+  time_series_unhighlight(bl)
+  if (!skip_map)
+    map_unhighlight(bl)
+}
 
 // handler functions for map.js and color_legend.js
 function handleMouseover(d, i){
@@ -21,8 +40,7 @@ function handleMouseover(d, i){
     .attr("r", 20).attr("opacity", .6).attr("stroke-width", 2)
   map.selectAll("#path_"+i).transition()
     .attr("stroke-width", 5)
-  bar.selectAll("." + cases2.bl).transition()
-    .attr("stroke-width", 5)
+  svg_highlight(cases2.bl, skip_map = true)
 }
 function handleMouseLeave(d, i){
   var cases2 =  cases[d.properties.name]
@@ -30,8 +48,7 @@ function handleMouseLeave(d, i){
     .attr("r", 10).attr("opacity", .7).attr("stroke-width", .5)
   map.selectAll("#path_"+i).transition()
     .attr("stroke-width", 1)
-  bar.selectAll("." + cases2.bl).transition()
-    .attr("stroke-width", 1)
+  svg_unhighlight(cases2.bl, skip_map = true)
 }
 
 // transform ratios to a [0, 1] scale
@@ -40,9 +57,26 @@ function scale_cases(d){
   return 1-cases[d.properties.name].ratio/260
   //return 1.5-Math.log(cases[d.properties.name].ratio)/4.2
 }
+function get_ratio(data_bez) {
+  return cases[data_bez.properties.name].ratio
+}
+function x_linear(ratio) {
+  return 300 + 700 * ratio/260
+}
+var get_color = (ratio) => d3.interpolateRdYlGn(1-ratio/260)
+
+svg.append("text")
+  .attr("x", 925)
+  .attr("y", 60)
+  .text("COVID-19 Fälle in Österreich")
+  .style("font-size", 50)
+  .attr("text-anchor", "middle")
+
 </script>  
 
 <script src="data.js"></script>
 <script src="map.js"></script>
 <script src="color_legend.js"></script>
 <script src="bar.js"></script>
+<script src="dot_plot.js"></script>
+<script src="time_series.js"></script>
