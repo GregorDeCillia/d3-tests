@@ -14,7 +14,11 @@
 <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 <!-- Create an element where the map will take place -->
-<svg id="my_dataviz" width="1850" height="1020"></svg>
+<div class="svg-container">
+  <svg id="my_dataviz" viewBox="0 0 1850 1020" preserveAspectRatio="xMinYMin meet"
+   class = "svg-content-responsive">
+  </svg>
+</div>
 
 <script>
 var svg = d3.select("svg")

@@ -1,7 +1,22 @@
 body {
     font-family: Signika Negative, sans-serif;
     background-color: #00000014;
-  }
+}
+
+.svg-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 56%; /* aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+}
+.svg-content-responsive {
+  display: inline-block;
+  position: absolute;
+  top: 0px;
+  left: 0;
+}
 
 .grid {
   stroke:rgba(0,0,0,0.2);
