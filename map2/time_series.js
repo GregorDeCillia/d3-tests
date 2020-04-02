@@ -1,31 +1,24 @@
 var time_series = svg.append("g")
   .attr("name", "time_series")
 
-function ts_color(d) {
-    if (d == "27.03")
-        return "#6971e9"
-      if (d == "23.03")
-        return "#7621be"
-      return "black"
-}
-
 ts_y = (difference) => 550 - 33*difference
 
-time_series
+var time_series_dates = time_series
   .append("g")
   .selectAll("text")
-  .data(["27.03", "26.03", "25.03", "24.03", "23.03", "22.03", "21.03", "20.03", "19.03", "18.03", "17.03", "16.03",
-         "15.03", "14.03", "13.03", "12.03", "11.03"])
+  .data(ts_data2.filter(d => d.ratio >= 5 & d.bl == "Tirol"))
   .enter()
   .append("text")
-  .text(d => d)
-  .attr("x", 10)
-  .attr("y", (d, i) => ts_y(i))
-  .attr("fill", ts_color)
+  .text(d => d.Datum)
+  .attr("x", 45)
+  .attr("y", d => ts_y(d.difference))
   .attr("font-size", 20)
-  .attr("font-weight", (d) => {
-      if (d == "27.03" | d == "23.03") return "bold"
-  })
+  .attr("dominant-baseline", "central")
+  .attr("text-anchor", "middle")
+  .classed("date", true)
+  .classed("ratio_old", d => d.difference == 4)
+  .classed("ratio_new", d => d.difference == 0)
+
 
 var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
   .key(d => d.bl)
@@ -51,28 +44,20 @@ time_series
     .on("mouseenter", d => svg_highlight(d.key))
     .on("mouseleave", d => svg_unhighlight(d.key))
 
-function time_series_radius(datum) {
-    if (datum == "27.03" | datum == "23.03")
-          return 7
-        else
-          return 4
-}
-
-time_series
+var time_series_circles = time_series
     .append("g")
+    .attr("class", "ts_circles")
     .selectAll("circle")
-    .data(ts_data2.filter((d) => d.ratio >=5))
+    .data(ts_data2.filter(d => d.ratio >= 5))
     .enter()
     .append("circle")
-    .attr("fill", (d) => ts_color(d.Datum))
-    .attr("cx", (d) => x_log(d.ratio))
-    .attr("cy", (d) => ts_y(d.difference))
-    .attr("r", (d) => time_series_radius(d.Datum))
-    .attr("class", d => d.bl)
+    .attr("cx", d => x_log(d.ratio))
+    .attr("cy", d => ts_y(d.difference))
     .attr("stroke", "rgba(0,0,0,.4)")
-    .on("mouseenter", d => svg_highlight(d.bl))
-    .on("mouseleave", d => svg_unhighlight(d.bl))
-
+    .attr("class", d => d.bl)
+    .classed("ratio_old", d => d.difference == 4)
+    .classed("ratio_new", d => d.difference == 0)
+  
 time_series.append("g")
   .selectAll("line")
   .data([5, 7, 10, 14, 20, 30, 50, 70, 100, 140, 200])
@@ -82,18 +67,53 @@ time_series.append("g")
   .attr("x2", d => x_log(d))
   .attr("y1", ts_y(-.5))
   .attr("y2", ts_y(16.5))
-  .attr("style", "stroke:rgba(0,0,0,0.2);stroke-width:2")
+  .attr("class", "grid")
+
+time_series.append("g")
+  .selectAll("rect")
+  .data(ts_data2.filter(d => d.ratio >= 5 & d.bl == "Tirol"))
+  .enter()
+  .append("rect")
+  .attr("y", d => ts_y(d.difference) - 16)
+  .attr("height", 33)
+  .attr("x", 0)
+  .attr("width", x_log(200))
+  .attr("opacity", 0)
+  .on("mouseenter", d => {
+    bar_inner
+       .data(ts_data2.filter(d2 => d2.Datum == d.Datum))
+       .transition().ease(d3.easeElastic).duration(1000)
+       .attr("width", d => x_linear(d.ratio) - 300)
+
+    let difference = Math.min(d.difference, 5)
+    dot_plot_update(difference)
+    let dd = x => x.difference - difference
+    time_series_circles
+      .classed("ratio_new", x => dd(x) == 0)
+      .classed("ratio_old", x => dd(x) == 4)
+      .classed("highlighted", x => x.difference == d.difference)
+
+    time_series_dates
+      .classed("ratio_new", x => dd(x) == 0)
+      .classed("ratio_old", x => dd(x) == 4)
+      .classed("highlighted", x => x.difference == d.difference)
+  
+  })
+  .on("mouseleave", d => {
+    bar_inner.transition().duration(1000).attr("width", 0)
+    time_series_circles.classed("highlighted", false)
+    time_series_dates.classed("highlighted", false)
+  })
 
 function time_series_highlight(bl) {
-  time_series.selectAll("path."+bl)
+  time_series.selectAll("path."+bl).transition().ease(d3.easeElastic).duration(1500)
     .attr("stroke-width", 4.5)
-  time_series.selectAll("circle."+bl)
-    .attr("r", d => 1.5*time_series_radius(d.Datum))
+
+  time_series_circles.classed("highlighted", d => d.bl == bl)
 }
 
 function time_series_unhighlight(bl) {
-  time_series.selectAll("path."+bl)
+  time_series.selectAll("path."+bl).transition()
     .attr("stroke-width", 1.5)
-  time_series.selectAll("circle."+bl)
-    .attr("r", d => time_series_radius(d.Datum))
+  time_series_circles.classed("highlighted", false)
 }

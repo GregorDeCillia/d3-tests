@@ -1,0 +1,98 @@
+body {
+    font-family: Signika Negative, sans-serif;
+    background-color: #00000014;
+  }
+
+.grid {
+  stroke:rgba(0,0,0,0.2);
+  stroke-width:2
+}
+
+circle{
+    transition: fill 200ms;
+    atransition-timing-function: cubic-bezier(0.600, -0.280, 0.735, 0.045)
+}
+
+text.highlighted{
+    font-weight: bold;
+}
+
+.ratio_new{
+  transition: r 400ms;
+    fill: #6971e9
+}
+
+.ratio_old{
+  transition: r 400ms;
+    fill: #7621be;
+}
+
+.ts_circles>circle{
+    transition: r 400ms, fill 400ms;
+    r: 5px
+}
+
+circle.ratio_new {
+    r: 10px;
+}
+
+circle.ratio_old {
+    r: 10px;
+}
+
+circle.highlighted{
+    opacity: 0.75;
+    r: 8px;
+}
+
+circle.highlighted.ratio_old{
+    r: 13px;
+}
+
+circle.highlighted.ratio_new{
+    r: 13px;
+}
+
+.ticks_ratio {
+    text-anchor: middle
+}
+
+.ratio_xlab {
+  text-anchor: middle;
+  font-weight: bold
+}
+
+.ratio_value{
+  font-size: 20px;
+  transition: font-size 500ms;
+  dominant-baseline: central
+}
+
+text.highlighted.ratio_value {
+  font-size: 23px;
+  font-weight: normal
+}
+
+.nuts2_labels{
+  font-size: 24px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  transition: font-size 500ms;
+}
+
+.nuts2_labels.highlighted{
+   font-weight: bold;
+   font-size: 26px;
+}
+
+.date.ratio_new{
+  font-weight: bold
+}
+
+.date.ratio_old{
+  font-weight: bold
+}
+
+.date.highlighted{
+  font-size: 27px;
+}

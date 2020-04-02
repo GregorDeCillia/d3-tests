@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
+<head>
+  <title>COVID-19 in Österreich</title>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 <!-- Create an element where the map will take place -->
-<!--<h1 style="text-align: center">COVID-19 Fälle in Österreich</h1> -->
 <svg id="my_dataviz" width="1850" height="1020"></svg>
 
 <script>
@@ -34,21 +40,21 @@ function svg_unhighlight(bl, skip_map = false) {
 
 // handler functions for map.js and color_legend.js
 function handleMouseover(d, i){
-  var cases2 =  cases[d.properties.name]
-  tooltip_map_update(d.properties.name, cases2.freq, cases2.population, cases2.ratio)
-  color_legend.selectAll("#circle_"+i).transition()
+  tooltip_map_update(d.bezirk, d.freq, d.population, d.ratio)
+  color_legend.selectAll("#circle_"+d.id).transition().ease(d3.easeElastic).duration(1500)
     .attr("r", 20).attr("opacity", .6).attr("stroke-width", 2)
-  map.selectAll("#path_"+i).transition()
-    .attr("stroke-width", 5)
-  svg_highlight(cases2.bl, skip_map = true)
+  map.selectAll("#path_"+d.id).transition()
+    .attr("stroke-width", 5).style("stroke", "rgba(0,0,0,.4)")
+
+  svg_highlight(d.bl, skip_map = true)
 }
 function handleMouseLeave(d, i){
-  var cases2 =  cases[d.properties.name]
-  color_legend.selectAll("#circle_"+i).transition()
+  color_legend.selectAll("#circle_"+d.id).transition().duration(500)
     .attr("r", 10).attr("opacity", .7).attr("stroke-width", .5)
-  map.selectAll("#path_"+i).transition()
-    .attr("stroke-width", 1)
-  svg_unhighlight(cases2.bl, skip_map = true)
+  map.selectAll("#path_"+d.id).transition()
+    .attr("stroke-width", 1).style("stroke", "rgba(0,0,0,.3)")
+
+  svg_unhighlight(d.bl, skip_map = true)
 }
 
 // transform ratios to a [0, 1] scale
@@ -65,13 +71,6 @@ function x_linear(ratio) {
 }
 var get_color = (ratio) => d3.interpolateRdYlGn(1-ratio/260)
 
-svg.append("text")
-  .attr("x", 925)
-  .attr("y", 60)
-  .text("COVID-19 Fälle in Österreich")
-  .style("font-size", 50)
-  .attr("text-anchor", "middle")
-
 </script>  
 
 <script src="data.js"></script>
@@ -80,3 +79,21 @@ svg.append("text")
 <script src="bar.js"></script>
 <script src="dot_plot.js"></script>
 <script src="time_series.js"></script>
+
+<script>
+var title = svg.append("g").attr("name", "title")
+
+title.append("rect")
+  .attr("x", 580)
+  .attr("y", 0)
+  .attr("width", 690)
+  .attr("height", 80)
+  .attr("fill", "#ebebeb")
+
+title.append("text")
+  .attr("x", 925)
+  .attr("y", 60)
+  .text("COVID-19 Fälle in Österreich")
+  .style("font-size", 50)
+  .attr("text-anchor", "middle")
+</script>

@@ -39,43 +39,36 @@ function tooltip_map_update(name, faelle, einwohner, faelle_rel){
   
   tooltip_map.selectAll("rect").transition().duration(500)
     .attr("fill", get_color(faelle_rel))
-    .attr("stroke", get_color(faelle_rel))
+    //.attr("stroke", get_color(faelle_rel))
+    .attr("stroke", "black")
 }
 
 // Load external data and boot
 d3.json(geojson_source + "bezirke_95_geo.json", function(data){
+//d3.json("bezirke_95_geo.json", function(data){
     // Draw the map
     map.append("g")
         .attr("name", "polygons")
         .selectAll("path")
         .data(data.features)
         .enter().append("path")
-            .attr("id", (d, i) => "path_"+i)
+            .attr("id", (d, i) => "path_"+cases[d.properties.name].id)
             .attr("fill", (d) => get_color(get_ratio(d)))
             .attr("d", d3.geoPath()
                 .projection(projection)
             )
             .attr("class", (d) => cases[d.properties.name].bl)
             .style("stroke", "rgba(0,0,0,.3)")
-            .on("mouseenter", handleMouseover)
-            .on("mouseleave", handleMouseLeave)
-
-    color_legend.append("g")
-       .attr("name", "circles")
-       .selectAll("circle")
-       .data(data.features)
-       .enter()
-       .append("circle")
-       .attr("cx", (d) => x_linear(get_ratio(d)))
-       .attr("r", 10)
-       .attr("opacity", .7)
-       .attr("fill", (d) => get_color(get_ratio(d)))
-       .on("mouseover", handleMouseover)
-       .on("mouseleave", handleMouseLeave)
-       .attr("stroke-width", .5)
-       .attr("stroke", "black")
-       .attr("id", (d, i) => "circle_" + i)
-       .attr("class", (d) => "circle_"+cases[d.properties.name].bl)
+            .on("mouseenter", function(d) {
+                handleMouseover(cases[d.properties.name])
+            })
+            .on("mouseleave", function(d) {
+                handleMouseLeave(cases[d.properties.name])
+            })
+            .attr("opacity", 0)
+            .transition()
+            .duration(1000)
+            .attr("opacity", 1)
 })
 
 var tooltip_map = map.append("g")
@@ -91,7 +84,7 @@ tooltip_map.append("rect")
   .attr("ry", 5)
   .attr("stroke-width", 3)
 
-function add_text(id, y) {
+function tooltip_map_add_text(id, y) {
   return tooltip_map.append("text")
     .attr("x", 5)
     .attr("y", y)
@@ -99,16 +92,17 @@ function add_text(id, y) {
     .style("font-size", 20)
 }
 
-add_text("bezirk", 25).attr("font-weight", "bold")
-add_text("faelle", 50)
-add_text("einwohner", 75)
-add_text("faelle_rel", 100)
+tooltip_map_add_text("bezirk", 25).attr("font-weight", "bold")
+tooltip_map_add_text("faelle", 50)
+tooltip_map_add_text("einwohner", 75)
+tooltip_map_add_text("faelle_rel", 100)
 
 function map_highlight(bl) {
   map.selectAll("."+bl).transition()
-    .attr("stroke-width", 5)
+    .attr("stroke-width", 4)
+    .style("stroke", "rgba(0,0,0,0.4)")
 
-  color_legend.selectAll(".circle_"+bl).transition()
+  color_legend.selectAll(".circle_"+bl).transition().ease(d3.easeElastic).duration(1500)
     .attr("r", 20).attr("opacity", .5).attr("stroke-width", 1)
 
 }
@@ -116,6 +110,8 @@ function map_highlight(bl) {
 function map_unhighlight(bl) {
   map.selectAll("."+bl).transition()
     .attr("stroke-width", 1)
+    .style("stroke", "rgba(0,0,0,.3)")
+
   color_legend.selectAll(".circle_"+bl).transition()
     .attr("r", 10).attr("opacity", .7).attr("stroke-width", .5)
 }
