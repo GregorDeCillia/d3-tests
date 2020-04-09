@@ -20,14 +20,14 @@ Hier bezeichnet `date` das Datum im Format (`dd.mm`) und `bkz` die [Bezirkskennz
 ```javascript
 const nuts2_ts = [
     // ...
-    {"t":"26.02","iso":7,"freq":2},
-    {"t":"26.02","iso":8,"freq":0}
+    {"date":"26.02","iso":7,"freq":2},
+    {"date":"26.02","iso":8,"freq":0}
     // ...
 ]
 
 const bez_ts = [
     // ...
-    {"t":"23.03","bkz":106,"freq":5}
+    {"date":"23.03","bkz":106,"freq":5}
     // ...
 ]
 ```
