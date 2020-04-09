@@ -5,33 +5,34 @@
 - bezirke_geojson: [https://github.com/ginseng666/GeoJSON-TopoJSON-Austria](https://github.com/ginseng666/GeoJSON-TopoJSON-Austria/blob/master/2017/simplified-95/bezirke_95_geo.json)
 - regions_metadata: Daten vom 01.01.2020 nach [Wikipedia](https://de.wikipedia.org/wiki/Liste_der_Bezirke_und_Statutarst%C3%A4dte_in_%C3%96sterreich#Liste)
 - ts_bezirke: https://github.com/statistikat/coronaDAT
-- ts_nuts2: [Wikipedia Sammlung](https://de.m.wikipedia.org/wiki/COVID-19-Pandemie_in_%C3%96sterreich#Best%C3%A4tige_Infektionen) von Fällen auf Bundeslandebene
+- ts_nuts2: https://github.com/statistikat/coronaDAT. Alternativ gibt es auch
+  Daten dazu auf [dieser Wikipedia Seite](https://de.m.wikipedia.org/wiki/COVID-19-Pandemie_in_%C3%96sterreich#Best%C3%A4tige_Infektionen)
 
 ### Zeitreihen
 
 Die Zeitreihen sind in einem tidy Format, das sich gut mit d3.js verwenden lässt. Spalten
 
-* ts_bezirke: `t`, `bkz`, `freq`
-* ts_nuts2: `t`, `iso`, `freq`
+* ts_bezirke: `date`, `bkz`, `freq`
+* ts_nuts2: `date`, `iso`, `freq`
 
-Hier bezeichnet `t` die Anzahl an Tagen seit den ersten Fällen in Tirol (26.02.2020) und `bkz` die [Bezirkskennziffer nach STAT](https://de.wikipedia.org/wiki/Liste_der_Bezirke_und_Statutarst%C3%A4dte_in_%C3%96sterreich#Liste) ohne vorangestelltem "AT-". `iso` ist der [Iso-Code des Bundeslandes](https://de.wikipedia.org/wiki/ISO_3166-2:AT). Im Eintrag `freq` befinden sich die bestätigten Fälle für die Region. Beispiel:
+Hier bezeichnet `date` das Datum im Format (`dd.mm`) und `bkz` die [Bezirkskennziffer nach STAT](https://de.wikipedia.org/wiki/Liste_der_Bezirke_und_Statutarst%C3%A4dte_in_%C3%96sterreich#Liste) ohne vorangestelltem "AT-". `iso` ist der [Iso-Code des Bundeslandes](https://de.wikipedia.org/wiki/ISO_3166-2:AT). Im Eintrag `freq` befinden sich die bestätigten Fälle für die Region. Beispiel:
 
 ```javascript
 const nuts2_ts = [
     // ...
-    {"t":0,"iso":7,"freq":2},
-    {"t":0,"iso":8,"freq":0}
+    {"t":"26.02","iso":7,"freq":2},
+    {"t":"26.02","iso":8,"freq":0}
     // ...
 ]
 
 const bez_ts = [
     // ...
-    {"t":25,"bkz":106,"freq":5}
+    {"t":"23.03","bkz":106,"freq":5}
     // ...
 ]
 ```
 
-Die Daten sind nach `(t,bkz)` bzw. `(t,iso)` sortiert.
+Die Daten sind nach `(date,iso)` bzw. `(date,bkz)` sortiert.
 
 #### Codierung
 
