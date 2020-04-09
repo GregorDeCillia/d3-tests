@@ -43,7 +43,7 @@ text.highlighted{
 }
 
 .ts_circles>circle{
-    transition: r 400ms, fill 400ms;
+    transition: r 400ms cubic-bezier(.4,.56,.49,1.54), fill 400ms;
     r: 5px
 }
 
@@ -79,7 +79,7 @@ circle.highlighted.ratio_new{
 
 .ratio_value{
   font-size: 20px;
-  transition: font-size 500ms;
+  transition: font-size 500ms cubic-bezier(.4,.56,.49,1.54);
   dominant-baseline: central
 }
 

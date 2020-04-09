@@ -9,27 +9,6 @@ var projection = d3.geoMercator()
 var geojson_source = "https://raw.githubusercontent.com/ginseng666/" +
   "GeoJSON-TopoJSON-Austria/master/2017/simplified-95/"
 
-/*
-setTimeout(function() {
-    d3.json(geojson_source + "laender_95_geo.json", function(data){
-    // Draw the map
-    map.append("g")
-        .selectAll("path2")
-        .data(data.features)
-        .enter().append("path")
-            .attr("fill", (d, i) => {
-                console.log(d.properties);
-                return "rgba(255, 255, 255, 0)";
-            })
-            .attr("d", d3.geoPath()
-                .projection(projection)
-            )
-            .style("stroke", "black")
-            .style("stroke-width", "3px")
-    })
-}, 200)
-*/
-
 function tooltip_map_update(name, faelle, einwohner, faelle_rel){
   tooltip_map.selectAll("#bezirk").text(name)
   tooltip_map.selectAll("#faelle").text("Fälle: " + faelle)
@@ -44,32 +23,55 @@ function tooltip_map_update(name, faelle, einwohner, faelle_rel){
 }
 
 // Load external data and boot
-d3.json(geojson_source + "bezirke_95_geo.json", function(data){
-//d3.json("bezirke_95_geo.json", function(data){
-    // Draw the map
-    map.append("g")
+//d3.json(geojson_source + "bezirke_95_geo.json", function(data){
+    var map_polygons = map.append("g")
         .attr("name", "polygons")
         .selectAll("path")
-        .data(data.features)
+        .data(polygons.features)
+        //.data(data.features)
         .enter().append("path")
-            .attr("id", (d, i) => "path_"+cases[d.properties.name].id)
-            .attr("fill", (d) => get_color(get_ratio(d)))
+            .attr("id", (d, i) => "path_" + d.properties.iso)
+            .attr("fill", (d) => {
+              let current_case = cases.filter(x => x.bkz == d.properties.iso)[0]
+              if (current_case == null) // if no match was found, assume no cases
+                return get_color(0)
+              else
+                return get_color(current_case.ratio)
+            })
             .attr("d", d3.geoPath()
                 .projection(projection)
             )
-            .attr("class", (d) => cases[d.properties.name].bl)
+            .attr("class", (d) => "bl_" + d.properties.iso.substring(0, 1))
             .style("stroke", "rgba(0,0,0,.3)")
             .on("mouseenter", function(d) {
-                handleMouseover(cases[d.properties.name])
+                handleMouseover(d.properties.iso)
             })
             .on("mouseleave", function(d) {
-                handleMouseLeave(cases[d.properties.name])
+                handleMouseLeave(d.properties.iso)
             })
-            .attr("opacity", 0)
-            .transition()
-            .duration(1000)
-            .attr("opacity", 1)
-})
+            //.attr("opacity", 0)
+            //.transition()
+            //.duration(500)
+            //.attr("opacity", 1)
+//})
+
+function map_update_time(new_date) {
+  var cases2 = ts_bez.filter(d => d.date == new_date)
+  // join ratio according to data/regions.js
+  cases2.forEach(d => d.ratio = d.freq/regions.bz[d.bkz].population*100000)
+
+  map_polygons
+    .transition()
+    .duration(500)
+    .attr("fill", (d) => {
+      let current_case = cases2.filter(x => x.bkz == d.properties.iso)[0]
+      if (current_case == null) // if no match was found, assume no cases
+        return get_color(0)
+      else
+        return get_color(current_case.ratio)
+    })
+
+}
 
 var tooltip_map = map.append("g")
   .attr("name", "tooltip")
@@ -97,18 +99,33 @@ tooltip_map_add_text("faelle", 50)
 tooltip_map_add_text("einwohner", 75)
 tooltip_map_add_text("faelle_rel", 100)
 
+bl_mapping = {
+  "Burgenland": 1,
+  "Kärnten": 2,
+  "Niederösterreich": 3,
+  "Oberösterreich": 4,
+  "Salzburg": 5,
+  "Steiermark": 6,
+  "Tirol": 7,
+  "Vorarlberg": 8,
+  "Wien": 9
+}
+
 function map_highlight(bl) {
-  map.selectAll("."+bl).transition()
+  //bl = bl_mapping[bl]
+  map.selectAll(".bl_" + bl).transition()
     .attr("stroke-width", 4)
     .style("stroke", "rgba(0,0,0,0.4)")
 
-  color_legend.selectAll(".circle_"+bl).transition().ease(d3.easeElastic).duration(1500)
+  color_legend.selectAll(".circle_"+bl)
+    .transition().ease(d3.easeElastic).duration(1500)
     .attr("r", 20).attr("opacity", .5).attr("stroke-width", 1)
 
 }
 
 function map_unhighlight(bl) {
-  map.selectAll("."+bl).transition()
+  //bl = bl_mapping[bl]
+  map.selectAll(".bl_"+bl).transition()
     .attr("stroke-width", 1)
     .style("stroke", "rgba(0,0,0,.3)")
 

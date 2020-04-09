@@ -3,15 +3,23 @@
 
 <head>
   <title>COVID-19 in Österreich</title>
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="www/favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
 </head>
 
-<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" type="text/css" href="www/style.css">
+<a class="github-fork-ribbon right-bottom fixed" href="https://github.com/GregorDeCillia/d3-tests/tree/master/map2" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
 
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+<script src="data/regions_metadata.js"></script>
+<script src="data/ts_nuts2.js"></script>
+<script src="data/ts_bezirke.js"></script>
+<script src="data/bezirke_geojson.js"></script>
+
 
 <!-- Create an element where the map will take place -->
 <div class="svg-container">
@@ -29,8 +37,9 @@ function svg_highlight(bl, skip_map = false) {
   time_series_highlight(bl)
   if (!skip_map) {
     map_highlight(bl)
-    let bl_data = nuts2.filter(d => d.bl == bl)[0]
-    tooltip_map_update(bl_data.bl, bl_data.freq, bl_data.pop, bl_data.ratio)
+    let bl_data = nuts2_2.filter(d => d.iso == bl)[0]
+    tooltip_map_update(regions.nuts2[bl].label, bl_data.freq,
+                       regions.nuts2[bl].pop, bl_data.ratio)
   }
 }
 
@@ -43,46 +52,46 @@ function svg_unhighlight(bl, skip_map = false) {
 }
 
 // handler functions for map.js and color_legend.js
-function handleMouseover(d, i){
-  tooltip_map_update(d.bezirk, d.freq, d.population, d.ratio)
-  color_legend.selectAll("#circle_"+d.id).transition().ease(d3.easeElastic).duration(1500)
+function handleMouseover(bkz){
+  let bez_data = regions.bz[bkz]
+  let cases_bez = cases.filter(d => d.bkz == bkz)[0]
+  tooltip_map_update(bez_data.label, cases_bez.freq, bez_data.population, cases_bez.ratio)
+  color_legend.selectAll("#circle_"+bkz).transition().ease(d3.easeElastic).duration(1500)
     .attr("r", 20).attr("opacity", .6).attr("stroke-width", 2)
-  map.selectAll("#path_"+d.id).transition()
+  map.selectAll("#path_"+bkz).transition()
     .attr("stroke-width", 5).style("stroke", "rgba(0,0,0,.4)")
 
-  svg_highlight(d.bl, skip_map = true)
+  //let bl = regions.nuts2[bkz.toString().substring(0, 1)].label
+  let iso = bkz.toString().substring(0, 1)
+  svg_highlight(iso, skip_map = true)
 }
-function handleMouseLeave(d, i){
-  color_legend.selectAll("#circle_"+d.id).transition().duration(500)
+function handleMouseLeave(bkz){
+  color_legend.selectAll("#circle_"+bkz).transition().duration(500)
     .attr("r", 10).attr("opacity", .7).attr("stroke-width", .5)
-  map.selectAll("#path_"+d.id).transition()
+  map.selectAll("#path_"+bkz).transition()
     .attr("stroke-width", 1).style("stroke", "rgba(0,0,0,.3)")
 
-  svg_unhighlight(d.bl, skip_map = true)
+  let iso = bkz.toString().substring(0, 1)
+  svg_unhighlight(iso, skip_map = true)
 }
 
-// transform ratios to a [0, 1] scale
-function scale_cases(d){
-  //return 1-cases[d.properties.name].ratio/300
-  return 1-cases[d.properties.name].ratio/260
-  //return 1.5-Math.log(cases[d.properties.name].ratio)/4.2
-}
-function get_ratio(data_bez) {
-  return cases[data_bez.properties.name].ratio
-}
-function x_linear(ratio) {
-  return 300 + 700 * ratio/260
-}
-var get_color = (ratio) => d3.interpolateRdYlGn(1-ratio/260)
+var nuts2_2 = ts_data3.filter(d => d.difference == 0)
+
+var x_max_linear = d3.max(nuts2_2.map(d => d.ratio))
+var x_linear = d3.scaleLinear()
+  .domain([0, x_max_linear*1.05])
+  .range([300, 1000])
+
+var get_color = d3.scaleSequential(d3.interpolateRdYlGn)
+  .domain([x_max_linear*1.05, 0])
 
 </script>  
 
-<script src="data.js"></script>
-<script src="map.js"></script>
-<script src="color_legend.js"></script>
-<script src="bar.js"></script>
-<script src="dot_plot.js"></script>
-<script src="time_series.js"></script>
+<script src="graphs/map.js"></script>
+<script src="graphs/color_legend.js"></script>
+<script src="graphs/bar.js"></script>
+<script src="graphs/dot_plot.js"></script>
+<script src="graphs/time_series.js"></script>
 
 <script>
 var title = svg.append("g").attr("name", "title")
@@ -91,12 +100,12 @@ title.append("rect")
   .attr("x", 580)
   .attr("y", 0)
   .attr("width", 690)
-  .attr("height", 80)
+  .attr("height", 70)
   .attr("fill", "#ebebeb")
 
 title.append("text")
   .attr("x", 925)
-  .attr("y", 60)
+  .attr("y", 55)
   .text("COVID-19 Fälle in Österreich")
   .style("font-size", 50)
   .attr("text-anchor", "middle")
